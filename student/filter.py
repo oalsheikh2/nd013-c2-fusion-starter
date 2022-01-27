@@ -27,7 +27,7 @@ class Filter:
         self.dim_state = params.dim_state # process model dimension
         self.dt = params.dt # time increment
         self.q = params.q # process noise variable for Kalman filter Q
-    pass
+    
     def F(self):
         ############
         # TODO Step 1: implement and return system matrix F
