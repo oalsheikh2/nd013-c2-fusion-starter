@@ -1,8 +1,10 @@
-# Writeup: Track 3D-Objects Over Time
+# Writeup: Track 3D-Objects
 
-Please use this starter template to answer the following questions:
+## When the code is functional, you are supposed to use the viewer to locate and closely inspect point-clouds on vehicles and write a short report that includes the following items:
 
-### 1. Write a short recap of the four tracking steps and what you implemented there (filter, track management, association, camera fusion). Which results did you achieve? Which part of the project was most difficult for you to complete, and why?
+### 1. Find and display 10 examples of vehicles with varying degrees of visibility in the point-cloud
+Identify vehicle features that appear as a stable feature on most vehicles (e.g. rear-bumper, tail-lights) and describe them briefly. Also, use the range image viewer from the last example to underpin your findings using the lidar intensity channe
+
 First, we defined the limits of the points outside our area of interest, then we use `np.where` to show points within the limits we defined by:
 ``` 
 mask = np.where((lidar_pcl[:, 0] >= lim_x[0]) & (lidar_pcl[:, 0] <= lim_x[1]) &
@@ -16,19 +18,28 @@ then we implement it in `object_pcl.py` and convert the point data to an 8-bit i
     img_range_intensity = np.vstack((ri_range, ri_intensity))
     img_range_intensity = img_range_intensity.astype(np.uint8)
 ```
-
-
-The output of the vizualization was the following:
-
 ![ID_1SDEX1](https://user-images.githubusercontent.com/79502750/151233548-40c55a33-5341-4af2-a244-84c5e0579614.png)
 
-While the LiDAR point-cloud without conversion looks like this:
+The output of the vizualization `'show_pcl'` was the following LiDAR point-cloud:
 
-![ID_S2_EX1](https://user-images.githubusercontent.com/79502750/151234143-62fa88e3-4c84-48fb-ab93-3e3d64340851.png)
+![EX222](https://user-images.githubusercontent.com/79502750/151462311-c1844f07-babf-4f7c-94f8-7c1622701be7.png)
+
+![EX244](https://user-images.githubusercontent.com/79502750/151462316-d5b97dca-280b-44d7-95c4-d81adf37d5c0.png)
+
+![EX21](https://user-images.githubusercontent.com/79502750/151462318-1f301471-7d2f-4d42-8a9c-33eda05dda8b.png)
+
+![EX24](https://user-images.githubusercontent.com/79502750/151462319-ab5ded89-1e37-459a-a654-37e3d2543703.png)
+
+![EX26](https://user-images.githubusercontent.com/79502750/151462321-e7d36884-062d-45b7-a123-97306e21b803.png)
 
 ![ID_SD_EX2](https://user-images.githubusercontent.com/79502750/151234219-5939d302-70a9-402d-bd74-efddce58104a.png)
 
+### 2. Identify vehicle features that appear as a stable feature on most vehicles (e.g. rear-bumper, tail-lights) and describe them briefly. Also, use the range image viewer from the last example to underpin your findings using the lidar intensity channel.
+
 Then I computed the intensity and height layers of the BEV map by implementing the `bev_from_pcl` function, and the output was the following:
+
+
+![ID_S2_EX1](https://user-images.githubusercontent.com/79502750/151234143-62fa88e3-4c84-48fb-ab93-3e3d64340851.png)
 
 ![ID_S2_EX11](https://user-images.githubusercontent.com/79502750/151234956-68d2f818-bd5a-45bd-b357-4fecff969d73.png)
 
@@ -55,4 +66,4 @@ I noticed that the LiDAR sometimes casts a shadow of the objects infront of it w
 ![ID_S2_EX11](https://user-images.githubusercontent.com/79502750/151123242-b20a787d-f33d-4a98-a40b-844ec498a677.png)
 ### 4. Can you think of ways to improve your tracking results in the future?
 
-We can use data from the vehicle itself such as speed.
+We can use data from the vehicle itself such as speed. And fuse more lidar sensors to avoid blind spots
