@@ -9,9 +9,8 @@
 # https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd013
 # ----------------------------------------------------------------------
 #
+# general package imports
 
-# general package imports
-# general package imports
 import cv2
 import numpy as np
 import torch
@@ -19,6 +18,7 @@ import open3d as o3d
 import zlib
 
 # add project directory to python path to enable relative imports
+
 import os
 import sys
 PACKAGE_PARENT = '..'
@@ -26,10 +26,12 @@ SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 
 # waymo open dataset reader
+
 from tools.waymo_reader.simple_waymo_open_dataset_reader import utils as waymo_utils
 from tools.waymo_reader.simple_waymo_open_dataset_reader import dataset_pb2, label_pb2
 
 # object detection tools and helper functions
+
 import misc.objdet_tools as tools
 
 def load_range_image(frame, lidar_name):
@@ -41,7 +43,9 @@ def load_range_image(frame, lidar_name):
         ri = np.array(ri.data).reshape(ri.shape.dims)
     return ri
 
+
 # visualize range image
+
 def show_range_image(frame, lidar_name):
 
     ####### ID_S1_EX1 START #######     
@@ -114,6 +118,7 @@ def show_pcl(pcl):
        
 
 # create birds-eye view of lidar data
+
 def bev_from_pcl(lidar_pcl, configs):
 
     # remove lidar points outside detection area and with too low reflectivity
@@ -148,14 +153,18 @@ def bev_from_pcl(lidar_pcl, configs):
     
     
     # Compute intensity layer of the BEV map
+    
     ####### ID_S2_EX2 START #######     
     #######
     print("student task ID_S2_EX2")
 
+    
     ## step 1 : create a numpy array filled with zeros which has the same dimensions as the BEV map
+    
     intensity_map = np.zeros((configs.bev_height + 1, configs.bev_width + 1))
 
     # step 2 : re-arrange elements in lidar_pcl_cpy by sorting first by x, then y, then -z (use numpy.lexsort)
+    
     idx_height = np.lexsort((-lidar_pcl_cpy[:, 2], lidar_pcl_cpy[:, 1], lidar_pcl_cpy[:, 0]))
     lidar_pcl_hei = lidar_pcl_cpy[idx_height]
 
@@ -165,6 +174,7 @@ def bev_from_pcl(lidar_pcl, configs):
 
     ## step 3 : extract all points with identical x and y such that only the top-most z-coordinate is kept (use numpy.unique)
     ##          also, store the number of points per x,y-cell in a variable named "counts" for use in the next task
+    
     _, idx_intensity_unique = np.unique(lidar_pcl_inten[:, 0:2], axis=0, return_index=True)
     lidar_pcl_inten = lidar_pcl_cpy[idx_intensity_unique]
 
@@ -187,6 +197,7 @@ def bev_from_pcl(lidar_pcl, configs):
 
 
     # Compute height layer of the BEV map
+    
     ####### ID_S2_EX3 START #######     
     #######
     print("student task ID_S2_EX3")
@@ -222,12 +233,14 @@ def bev_from_pcl(lidar_pcl, configs):
     density_map[np.int_(lidar_pcl_top[:, 0]), np.int_(lidar_pcl_top[:, 1])] = normalizedCounts
         
     # assemble 3-channel bev-map from individual maps
+    
     bev_map = np.zeros((3, configs.bev_height, configs.bev_width))
     bev_map[2, :, :] = density_map[:configs.bev_height, :configs.bev_width]  
     bev_map[1, :, :] = height_map[:configs.bev_height, :configs.bev_width]  
     bev_map[0, :, :] = intensity_map[:configs.bev_height, :configs.bev_width]  
 
     # expand dimension of bev_map before converting into a tensor
+    
     s1, s2, s3 = bev_map.shape
     bev_maps = np.zeros((1, s1, s2, s3))
     bev_maps[0] = bev_map
