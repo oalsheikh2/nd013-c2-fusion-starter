@@ -41,29 +41,34 @@ Then I computed the intensity and height layers of the BEV map by implementing t
 
 ![ID_S2_EX1](https://user-images.githubusercontent.com/79502750/151234143-62fa88e3-4c84-48fb-ab93-3e3d64340851.png)
 
-![ID_S2_EX11](https://user-images.githubusercontent.com/79502750/151234956-68d2f818-bd5a-45bd-b357-4fecff969d73.png)
+intensity:
 
-![ID_S2_EX22](https://user-images.githubusercontent.com/79502750/151234976-60cc2886-dbb3-4d18-88b6-71e83f67f5ef.png)
+![Screenshot 2022-01-29 191555](https://user-images.githubusercontent.com/79502750/151687655-dd85a81f-cc3b-4670-8d15-2ab5daeb6784.png)
+
+
+![Screenshot 2022-01-29 191441](https://user-images.githubusercontent.com/79502750/151687645-9ae45b8d-03d1-4ca3-bc2d-4e71b780bec6.png)
+
+height:
+
+![Screenshot 2022-01-29 191641](https://user-images.githubusercontent.com/79502750/151687690-67796ba6-4270-4852-aa20-578ba309b21a.png)
+
+![Screenshot 2022-01-29 192002](https://user-images.githubusercontent.com/79502750/151687692-ea95658c-c5f2-4b44-a0f1-1c4d63ddf184.png)
+
+Checked if visualization working:
+
+
+![Screenshot 2022-01-29 222200](https://user-images.githubusercontent.com/79502750/151687826-93a690a1-aa44-4e09-9e74-a812c224717e.png)
 
 I also used the ResNet model and implemented the `detect_objecst` function to extract 3D bounding boxes 
 
-![ID_S3_EX1](https://user-images.githubusercontent.com/79502750/151235657-f7f90cc2-db6a-4bae-ab41-3d6bf732da6a.png)
+![Screenshot 2022-01-29 225120](https://user-images.githubusercontent.com/79502750/151687781-271f69a2-a3f9-4a77-91cf-04426b415782.png)
 
-![ID_S3_EX2](https://user-images.githubusercontent.com/79502750/151235752-16492206-fc28-42d8-a9db-bb54b6f2da89.png)
+![Screenshot 2022-01-27 224310](https://user-images.githubusercontent.com/79502750/151687797-6260e4a0-7fb0-446e-8287-862be1d47164.png)
+
+![Screenshot 2022-01-29 224942](https://user-images.githubusercontent.com/79502750/151687801-faf6374c-9b6a-4875-ab34-4179e77d6f40.png)
 
 Then I used the DarkNET model, and Evaluated the model's performance
 
-![ID_S4_EX3](https://user-images.githubusercontent.com/79502750/151236001-b9385bb5-8452-4164-9d08-3e337b706df4.png)
 
+![Screenshot 2022-01-30 000345](https://user-images.githubusercontent.com/79502750/151687837-098cecc6-c7c9-4d65-9fb9-d41f690e0619.png)
 
-### 2. Do you see any benefits in camera-lidar fusion compared to lidar-only tracking (in theory and in your concrete results)? 
-Absoulutely! LiDAR provides the physical properties of the environment around it, such as distance and speeds, while it aids in the detection of objects in a 3D point from camera 
-
-
-### 3. Which challenges will a sensor fusion system face in real-life scenarios? Did you see any of these challenges in the project?
-I noticed that the LiDAR sometimes casts a shadow of the objects infront of it which means missing roadway features and possibly an inability to detect objects at that blind spot, which can be depicted below:
-
-![ID_S2_EX11](https://user-images.githubusercontent.com/79502750/151123242-b20a787d-f33d-4a98-a40b-844ec498a677.png)
-### 4. Can you think of ways to improve your tracking results in the future?
-
-We can use data from the vehicle itself such as speed. And fuse more lidar sensors to avoid blind spots
