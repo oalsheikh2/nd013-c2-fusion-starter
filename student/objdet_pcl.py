@@ -180,7 +180,7 @@ def bev_from_pcl(lidar_pcl, configs):
     ## step 3 : extract all points with identical x and y such that only the top-most z-coordinate is kept (use numpy.unique)
     ##          also, store the number of points per x,y-cell in a variable named "counts" for use in the next task
     
-    lidar_pcl_inten, indices, counts = np.unique(lidar_pcl_cpy[:, 0:2], axis=0, return_index = True, return_counts = True)
+    lidar_pcl_in, indices, counts = np.unique(lidar_pcl_cpy[:, 0:2], axis=0, return_index = True, return_counts = True)
     lidar_pcl_top = lidar_pcl_cpy[indices]
 
 

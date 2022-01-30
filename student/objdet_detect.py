@@ -80,7 +80,7 @@ def load_configs_model(model_name='darknet', configs=None):
         configs.K = 50
    
         configs.input_size = (608, 608)
-        configs.hm_size = (152, 152)
+        configs.hm_size = (224, 224)
         configs.down_ratio = 4
         configs.max_objects = 50
         configs.batch_size = 4
