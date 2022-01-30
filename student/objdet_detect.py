@@ -10,26 +10,30 @@
 # ----------------------------------------------------------------------
 #
 
+import argparse
+# add project directory to python path to enable relative imports
+import os
+import sys
+
 # general package imports
 import numpy as np
 import torch
 from easydict import EasyDict as edict
-import argparse
+from tools.objdet_models.darknet.models.darknet2pytorch import \
+    Darknet as darknet
+from tools.objdet_models.darknet.utils.evaluation_utils import \
+    post_processing_v2
+# model-related
+from tools.objdet_models.resnet.models import fpn_resnet
+from tools.objdet_models.resnet.utils.evaluation_utils import (decode,
+                                                               post_processing)
+from tools.objdet_models.resnet.utils.torch_utils import _sigmoid
 
-# add project directory to python path to enable relative imports
-import os
-import sys
 PACKAGE_PARENT = '..'
 SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 
-# model-related
-from tools.objdet_models.resnet.models import fpn_resnet
-from tools.objdet_models.resnet.utils.evaluation_utils import decode, post_processing 
-from tools.objdet_models.resnet.utils.torch_utils import _sigmoid
 
-from tools.objdet_models.darknet.models.darknet2pytorch import Darknet as darknet
-from tools.objdet_models.darknet.utils.evaluation_utils import post_processing_v2
 
 
 # load model-related parameters into an edict
@@ -70,13 +74,16 @@ def load_configs_model(model_name='darknet', configs=None):
        
         configs.pin_memory = True
         configs.distributed = True  # For testing on 1 GPU only
-
+        
+        configs.num_input_features = 4
+        configs.conf_thresh = 0.5
+        configs.K = 50
    
         configs.input_size = (608, 608)
         configs.hm_size = (152, 152)
         configs.down_ratio = 4
         configs.max_objects = 50
-
+        configs.batch_size = 4
         configs.imagenet_pretrained = False
         configs.head_conv = 64
         configs.num_classes = 3
@@ -92,9 +99,7 @@ def load_configs_model(model_name='darknet', configs=None):
             'z_coor': configs.num_z,
             'dim': configs.num_dim
         }
-        configs.num_input_features = 4
-        configs.conf_thresh = 0.5
-        configs.K = 50
+
         #######
         ####### ID_S3_EX1-3 END #######     
 
@@ -128,7 +133,7 @@ def load_configs(model_name='fpn_resnet', configs=None):
     configs = load_configs_model(model_name, configs)
 
     # visualization parameters
-    configs.output_width = 608 # width of result image (height may vary)
+    configs.output_width = 608 # width of result image eight may vary)
     configs.obj_colors = [[0, 255, 255], [0, 0, 255], [255, 0, 0]] # 'Pedestrian': 0, 'Car': 1, 'Cyclist': 2
 
     return configs
@@ -151,7 +156,8 @@ def create_model(configs):
         ####### ID_S3_EX1-4 START #######     
         #######
         print("student task ID_S3_EX1-4")
-        model = fpn_resnet.get_pose_net(num_layers=18, heads=configs.heads, head_conv=configs.head_conv,
+        layers = 18
+        model = fpn_resnet.get_pose_net(num_layers= layers, heads=configs.heads, head_conv=configs.head_conv,
                                         imagenet_pretrained=configs.imagenet_pretrained)
         #######
         ####### ID_S3_EX1-4 END #######     
@@ -193,7 +199,7 @@ def detect_objects(input_bev_maps, model, configs):
                 for obj in detection:
                     x, y, w, l, im, re, _, _, _ = obj
                     yaw = np.arctan2(im, re)
-                    detections.append([1, x, y, 0.0, 1.50, w, l, yaw])    
+                    detections.append([1, x, y, 0, 1.50, w, l, yaw])    
 
         elif 'fpn_resnet' in configs.arch:
             # decode output and perform post-processing
@@ -205,15 +211,12 @@ def detect_objects(input_bev_maps, model, configs):
             outputs['hm_cen'] = _sigmoid(outputs['hm_cen'])
             outputs['cen_offset'] = _sigmoid(outputs['cen_offset'])
             # detections size (batch_size, K, 10)
-            detections_org = decode(outputs['hm_cen'], outputs['cen_offset'], outputs['direction'], outputs['z_coor'],
+            VEH = 1
+            detections = decode(outputs['hm_cen'], outputs['cen_offset'], outputs['direction'], outputs['z_coor'],
                                 outputs['dim'], K=configs.K)
-            detections_org = detections_org.cpu().numpy().astype(np.float32)
-            detections_org = post_processing(detections_org, configs)
+            detections = detections.cpu().numpy().astype(np.float32)
+            detections = post_processing(detections, configs)[0][VEH]
             
-            detections = []
-            for obj in detections_org[0][1]:
-                _, x, y, z, h, w, l, yaw = obj
-                detections.append([1, x, y, z, h, w, l, yaw])
             #######
             ####### ID_S3_EX1-5 END #######     
 
@@ -222,15 +225,18 @@ def detect_objects(input_bev_maps, model, configs):
     ####### ID_S3_EX2 START #######     
     #######
     # Extract 3d bounding boxes from model response
+    print(f"Detections in frames: {len(detections)}")
+
     print("student task ID_S3_EX2")
-    objects = [] 
+
+    objects=[]
 
     ## step 1 : check whether there are any detections
     if (len(detections) > 0):
         ## step 2 : loop over all detections
-        for detection in detections:
+        for objects in detections:
             ## step 3 : perform the conversion using the limits for x, y and z set in the configs structure
-            _id, _x, _y, _z, _h, _w, _l, _yaw = detection
+            _ind, _x, _y, _z, _h, _w, _l, _yaw = objects
 
             y = (_x/configs.bev_width)*(configs.lim_y[1] - configs.lim_y[0]) + configs.lim_y[0]
             x = (_y/configs.bev_width)*(configs.lim_x[1] - configs.lim_x[0]) + configs.lim_x[0]
@@ -240,10 +246,11 @@ def detect_objects(input_bev_maps, model, configs):
             yaw = -_yaw
 
             ## step 4 : append the current object to the 'objects' array
-            objects.append([_id, x, y, z, _h, w, l, yaw])        
-            print(f'fpn_resnet detect car at {_x, _y, _z} with size of {_w, _h, _l} yaw is {_yaw}')
+            objects.append([_ind, x, y, z, _h, w, l, yaw])        
+            print(f"detection coor {x, y, z} image size {w, _h, l} yaw  {yaw}")
     #######
     ####### ID_S3_EX2 START #######   
     
-    return objects    
+    return objects 
+
 
