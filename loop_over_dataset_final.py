@@ -33,7 +33,7 @@ from tools.waymo_reader.simple_waymo_open_dataset_reader import WaymoDataFileRea
 ## 3d object detection
 import student.objdet_pcl as pcl
 import student.objdet_detect as det
-import student.objdet_eval as eval
+import student.objdet_eval as evals
 
 import misc.objdet_tools as tools 
 from misc.helpers import save_object_to_file, load_object_from_file, make_exec_list
@@ -162,7 +162,7 @@ while True:
         ## Performance evaluation for object detection
         if 'measure_detection_performance' in exec_list:
             print('measuring detection performance')
-            det_performance = eval.measure_detection_performance(detections, frame.laser_labels, valid_label_flags, configs_det.min_iou)     
+            det_performance = evals.measure_detection_performance(detections, frame.laser_labels, valid_label_flags, configs_det.min_iou)     
         else:
             print('loading detection performance measures from file')
             # load different data for final project vs. mid-term project
@@ -274,7 +274,7 @@ while True:
 
 ## Evaluate object detection performance
 if 'show_detection_performance' in exec_list:
-    eval.compute_performance_stats(det_performance_all, configs_det)
+    evals.compute_performance_stats(det_performance_all, configs_det)
 
 ## Plot RMSE for all tracks
 if 'show_tracks' in exec_list:
