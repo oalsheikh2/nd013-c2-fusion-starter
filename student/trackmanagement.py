@@ -116,16 +116,14 @@ class Trackmanagement:
             if len(meas_list) > 0: # if not empty
                 if meas_list[0].sensor.in_fov(track.x):
                     # your code goes here
-                    track.score -= 0.1
+                    track.score -= 1 / params.window
 
         # delete old tracks   
-        for t in self.track_list:
-            if(t.score < params.delete_threshold and t.state=='confirmed'):
-                self.delete_track(t)
-            elif(t.P[0,0] > params.max_P or t.P[1,1] > params.max_P):
-                self.delete_track(t)
-            elif(t.score < 0):
-                self.delete_track(t)
+        for track in self.track_list:
+            x_pred_variance = track.P[0,0]
+            y_pred_variance = track.P[1,1]
+            if (track.score <= params.delete_threshold and track.state == 'confirmed') or  x_pred_variance>params.max_P or y_pred_variance>params.max_P:
+                    self.delete_track(track)
         ############
         # END student code
         ############ 
@@ -154,13 +152,11 @@ class Trackmanagement:
         # - increase track score
         # - set track state to 'tentative' or 'confirmed'
         ############
-
-        track.score += 0.1
-        if(track.score > params.confirmed_threshold ):
-            track.state = 'confirmed'
+        track.score += 1/params.window
+        if track.score >= params.confirmed_threshold:
+            track.state = "confirmed"
         else:
-            track.state = 'tentative'
-        
+            track.state = "tentative"
         ############
         # END student code
-        ############ 
+        ############

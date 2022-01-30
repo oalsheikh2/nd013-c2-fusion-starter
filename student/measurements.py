@@ -88,7 +88,7 @@ class Sensor:
             pos_sens = self.veh_to_sens*pos_veh # transform from vehicle to sensor coordinates
 
             hx = np.zeros((2,1))
-            if x[0]==0:
+            if pos_sens[0]==0:
                 raise NameError('Jacobian not defined for x[0]=0!')
             else:
                 hx[0,0] = self.c_i - self.f_i*pos_sens[1]/pos_sens[0] # project to image coordinates
