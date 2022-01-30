@@ -34,7 +34,11 @@ It can be seen that most vehicles have the same height and display their feature
 
 ![EX26](https://user-images.githubusercontent.com/79502750/151462321-e7d36884-062d-45b7-a123-97306e21b803.png)
 
+The image below shows a truck's bed, next to the test vehicle
+
 ![ID_SD_EX2](https://user-images.githubusercontent.com/79502750/151234219-5939d302-70a9-402d-bd74-efddce58104a.png)
+
+While other images below view most of the vehicles features such as front and back bumper
 
 ![Screenshot 2022-01-30 182251](https://user-images.githubusercontent.com/79502750/151722471-5d623f90-7e68-4cf6-89cf-640003164b85.png)
 
@@ -59,12 +63,18 @@ Then I computed the intensity and height layers of the BEV map by implementing t
 
 intensity:
 
+It is difficult to identify objects from this channel,
+
 ![Screenshot 2022-01-29 191555](https://user-images.githubusercontent.com/79502750/151687655-dd85a81f-cc3b-4670-8d15-2ab5daeb6784.png)
 
 
 ![Screenshot 2022-01-29 191441](https://user-images.githubusercontent.com/79502750/151687645-9ae45b8d-03d1-4ca3-bc2d-4e71b780bec6.png)
 
+However when we add the height channel below more features can be identified,
+
 height:
+
+As we can see the contour lines aided in applying more visibility,
 
 ![Screenshot 2022-01-29 191641](https://user-images.githubusercontent.com/79502750/151687690-67796ba6-4270-4852-aa20-578ba309b21a.png)
 
